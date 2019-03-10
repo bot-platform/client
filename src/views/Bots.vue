@@ -1,24 +1,54 @@
 <script lang="ts">
-  import NewBot from "@/components/NewBot.vue";
+  import NewBot from "@/components/dialogs/NewBot.vue";
 
   export default {
     components: {NewBot},
     data: () => {
       return {
+        loader: null,
+        loading2: false,
         bots: [],
       };
     },
-    async created(): void {
-      try {
-        this.bots = (await this.$api.bots()).data;
-      } catch (e) {
-        this.$eventBus.$emit("error", e.message);
-      }
+    created(): void {
+      this.load();
     },
     methods: {
-      createBot() {
-        this.$refs.newBotDialog.show();
+      async load() {
+        this.bots = [];
+        try {
+          this.bots = (await this.$api.bots()).data;
+        } catch (err) {
+          this.$errorHandler.handle(err);
+        }
       },
+      createBot() {
+        this.$refs.newBotDialog.show((status) => {
+          if (status === "confirmed") {
+            this.load();
+          }
+        });
+      },
+      async deleteBot(bot) {
+        try {
+          await this.$api.deleteBot(bot.id);
+          await this.load();
+        } catch (err) {
+          this.$errorHandler.handle(err);
+        }
+      },
+      async testBot(bot) {
+        try {
+          const res = (await this.$api.testBot(bot.id)).data;
+        } catch (err) {
+          this.$errorHandler.handle(err);
+        }
+      },
+      async reload() {
+        this.loading2 = true;
+        await this.load();
+        this.loading2 = false;
+      }
     },
   }
 </script>
@@ -27,26 +57,37 @@
     <v-container>
         <v-layout>
             <NewBot ref="newBotDialog"/>
-            <v-flex xs12 sm12>
+            <v-flex xs2 sm2>
+                <v-btn large block color="primary" @click="createBot">Добавить</v-btn>
+                <v-btn large block :loading="loading2" :disabled="loading2" color="success" @click="reload()">
+                    Обновить
+                    <template v-slot:loader>
+                        <span>Loading...</span>
+                    </template>
+                </v-btn>
+            </v-flex>
+            <v-divider class="mx-3" inset vertical></v-divider>
+            <v-flex xs10 sm10>
                 <h1 v-if="bots.length === 0">У вас нет ботов</h1>
-                <v-btn large color="primary" @click="createBot">Добавить</v-btn>
-                <v-flex xs6 sm6>
-                    <v-card v-for="item in bots">
-                        <v-img :src="item.image" :contain="true"></v-img>
-                        <v-card-title primary-title>
-                            <div>
-                                <h3 class="headline mb-0">{{ item.name }}</h3>
-                                <div>{{ item.description }}</div>
-                            </div>
-                        </v-card-title>
-
-                        <v-card-actions>
-                            <v-btn flat color="orange">Подробнее</v-btn>
-                            <v-btn flat color="orange">Участвовать</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-flex>
+                <v-card class="bot-card" xs4 sm4 v-for="item in bots">
+                    <v-card-title primary-title>
+                        <div>
+                            <h3 class="headline mb-0">{{ item.name }}</h3>
+                            <div>{{ item.description }}</div>
+                        </div>
+                    </v-card-title>
+                    <v-card-actions>
+                        <v-btn flat color="orange" @click="testBot(item)">Тестировать</v-btn>
+                        <v-btn flat color="red" @click="deleteBot(item)">Удалить</v-btn>
+                    </v-card-actions>
+                </v-card>
             </v-flex>
         </v-layout>
     </v-container>
 </template>
+
+<style lang="stylus" scoped>
+    .bot-card {
+        margin-bottom 12px
+    }
+</style>

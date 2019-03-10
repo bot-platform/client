@@ -9,8 +9,8 @@
     async created() {
       try {
         this.tournaments = (await this.$api.tournaments()).data;
-      } catch (e) {
-        alert(e);
+      } catch (err) {
+        this.$errorHandler.handle(err);
       }
     }
   }
@@ -19,21 +19,18 @@
 <template>
     <v-container>
         <v-layout>
-            <v-flex xs12 sm12>
-                <v-card v-for="item in tournaments">
-                    <v-img :src="item.image" :contain="true" aspect-ratio="2"></v-img>
-                    <v-card-title primary-title>
-                        <div>
-                            <h3 class="headline mb-0">{{ item.name }}</h3>
-                            <div>{{ item.description }}</div>
-                        </div>
-                    </v-card-title>
-
-                    <v-card-actions>
-                        <v-btn flat color="orange">Подробнее</v-btn>
-                        <v-btn flat color="orange">Участвовать</v-btn>
-                    </v-card-actions>
+            <v-flex v-if="tournaments.length > 0">
+                <v-card xs6 sm6 color="indigo darken-1" dark v-for="item in tournaments">
+                    <v-img :src="item.image" :contain="false" max-height="200" aspect-ratio="3"></v-img>
+                    <v-card-title class="title">{{ item.name }}</v-card-title>
+                    <v-card-text class="white text--primary">
+                        <p>{{ item.description }}</p>
+                        <v-btn color="indigo darken-1" class="mx-0" outline>Принять участие</v-btn>
+                    </v-card-text>
                 </v-card>
+            </v-flex>
+            <v-flex v-else xs12 sm12>
+                нет турниров
             </v-flex>
         </v-layout>
     </v-container>

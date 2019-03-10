@@ -1,5 +1,6 @@
-import Vue from 'vue'
+import _Vue from 'vue'
 import axios, {AxiosInstance, AxiosPromise, AxiosRequestConfig, AxiosResponse} from "axios"
+import {EventBus} from "@/plugins/event-bus"
 
 class Api {
   private readonly instance: AxiosInstance;
@@ -16,6 +17,14 @@ class Api {
       }
       return config;
     }, function (error) {
+      return Promise.reject(error);
+    });
+    this.instance.interceptors.response.use(function (response) {
+      return response;
+    }, function (error) {
+      if (parseInt(error.response.status) === 401) {
+        EventBus.$emit("unauthorized");
+      }
       return Promise.reject(error);
     });
   }
@@ -43,14 +52,65 @@ class Api {
       url: "/bots",
     });
   }
+
+  addBot(name: string, address: string): AxiosPromise {
+    return this.instance({
+      method: "POST",
+      url: "/bots",
+      data: {
+        name: name,
+        address: address,
+      },
+    });
+  }
+
+  deleteBot(id: string): AxiosPromise {
+    return this.instance({
+      method: "DELETE",
+      url: `/bots/${id}`,
+    });
+  }
+
+  register(login: string): AxiosPromise {
+    return this.instance({
+      method: "POST",
+      url: "/register",
+      data: {
+        login,
+      },
+    });
+  }
+
+  login(login: string, password: string): AxiosPromise {
+    return this.instance({
+      method: "POST",
+      url: "/login",
+      data: {
+        login,
+        password,
+      },
+    });
+  }
+
+  testBot(id: string): AxiosPromise {
+    return this.instance({
+      method: "POST",
+      url: `/bots/${id}/test`,
+      data: {},
+    });
+  }
 }
 
-const ApiPlugin = {
-  install(Vue: Vue, options: any) {
-    Vue.prototype.$api = new Api(options.server);
-  }
+type PluginOptions = {
+  server: string;
 };
 
-Vue.use(ApiPlugin, {
+class ApiPlugin {
+  static install(vue: _Vue, options: PluginOptions) {
+    vue.prototype.$api = new Api(options.server);
+  }
+}
+
+_Vue.use(ApiPlugin, <PluginOptions>{
   server: "http://localhost:1323/api",
 });

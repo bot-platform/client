@@ -1,11 +1,12 @@
 import Vue from 'vue'
-import './plugins/vuetify'
-import './plugins/api'
-import './plugins/event-bus'
-import App from './App.vue'
-import store from './store'
-import './registerServiceWorker'
-import router from './router'
+import '@/plugins/vuetify'
+import '@/plugins/api'
+import '@/plugins/event-bus'
+import '@/plugins/error-handler'
+import '@/registerServiceWorker'
+import router from '@/router'
+import store from '@/store'
+import App from '@/App.vue'
 
 Vue.config.productionTip = false;
 
