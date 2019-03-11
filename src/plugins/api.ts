@@ -101,16 +101,12 @@ class Api {
   }
 }
 
-type PluginOptions = {
+export type PluginOptions = {
   server: string;
 };
 
-class ApiPlugin {
-  static install(vue: _Vue, options: PluginOptions) {
-    vue.prototype.$api = new Api(options.server);
+export default class ApiPlugin {
+  static install(Vue: typeof _Vue, options: PluginOptions): void {
+    Vue.prototype.$api = new Api(options.server);
   }
 }
-
-_Vue.use(ApiPlugin, <PluginOptions>{
-  server: "http://localhost:1323/api",
-});

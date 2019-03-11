@@ -22,5 +22,10 @@ export default new Router({
       name: "bots",
       component: () => import('@/views/Bots.vue'),
     },
+    {
+      path: '/bots/:id/test',
+      name: "bot_test",
+      component: () => import('@/views/BotTest.vue'),
+    },
   ],
 })

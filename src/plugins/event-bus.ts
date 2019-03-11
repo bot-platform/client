@@ -1,11 +1,9 @@
-import Vue from 'vue';
+import _Vue from 'vue';
 
-export const EventBus = new Vue();
+export const EventBus = new _Vue();
 
-const EventBusPlugin = {
-  install(Vue: Vue, options: any) {
+export default class EventBusPlugin {
+  static install(Vue: typeof _Vue, options?: any): void {
     Vue.prototype.$eventBus = EventBus;
   }
-};
-
-Vue.use(EventBusPlugin, {});
+}

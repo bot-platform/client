@@ -1,11 +1,10 @@
-import Vue from 'vue'
+import _Vue from 'vue';
 
 class ErrorHandler {
   constructor(private eventBus: any) {
   }
 
-  public handle(err) {
-    console.debug(`handle error: ${err}`);
+  public handle(err: any) {
     let text = "";
     if (err.response) {
       // The request was made and the server responded with a status code
@@ -26,10 +25,8 @@ class ErrorHandler {
   }
 }
 
-class ErrorHandlerPlugin {
-  static install(vue: Vue, options: any) {
-    vue.prototype.$errorHandler = new ErrorHandler(vue.prototype.$eventBus);
+export default class ErrorHandlerPlugin {
+  static install(Vue: typeof _Vue, options?: any): void {
+    Vue.prototype.$errorHandler = new ErrorHandler(Vue.prototype.$eventBus);
   }
 }
-
-Vue.use(ErrorHandlerPlugin);

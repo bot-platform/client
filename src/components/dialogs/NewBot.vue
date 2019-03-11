@@ -45,7 +45,7 @@
                         <v-layout wrap>
                             <v-flex xs12 sm12 md12>
                                 <v-text-field label="Имя" v-model.trim="form.name" required persistent-hint outline></v-text-field>
-                                <v-text-field label="Адрес" v-model.trim="form.address" required persistent-hint outline hint="http://localhost:18000"></v-text-field>
+                                <v-text-field label="Адрес" v-model.trim="form.address" required persistent-hint outline hint="http://localhost:18000/hook"></v-text-field>
                             </v-flex>
                         </v-layout>
                     </v-container>

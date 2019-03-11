@@ -38,11 +38,7 @@
         }
       },
       async testBot(bot) {
-        try {
-          const res = (await this.$api.testBot(bot.id)).data;
-        } catch (err) {
-          this.$errorHandler.handle(err);
-        }
+        this.$router.push({name: "bot_test", params: {id: bot.id}});
       },
       async reload() {
         this.loading2 = true;
@@ -58,8 +54,8 @@
         <v-layout>
             <NewBot ref="newBotDialog"/>
             <v-flex xs2 sm2>
-                <v-btn large block color="primary" @click="createBot">Добавить</v-btn>
-                <v-btn large block :loading="loading2" :disabled="loading2" color="success" @click="reload()">
+                <v-btn large block color="indigo darken-1" class="mx-0" outline @click="createBot">Добавить</v-btn>
+                <v-btn large block color="success darken-1" class="mx-0" :loading="loading2" :disabled="loading2" outline @click="reload">
                     Обновить
                     <template v-slot:loader>
                         <span>Loading...</span>
